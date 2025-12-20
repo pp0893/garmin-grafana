@@ -685,6 +685,63 @@ def get_activity_summary(date_str):
             logging.warning(f"Skipped : Start Timestamp missing for activity id {activity.get('activityId')} for date {date_str}")
     return points_list, activity_with_gps_id_dict
 
+def get_strength_training(date_str):
+    points_list = []
+    activity_with_gps_id_dict = {}
+    activity_list = garmin_obj.get_activities_by_date(date_str, date_str)
+    for activity in activity_list:
+        if activity.get('activityType', {}).get('typeKey') == 'strength_training':
+            if "startTimeGMT" in activity: # "startTimeGMT" should be available for all activities (fix #13)
+                points_list.append({
+                    "measurement":  "ActivitySummary",
+                    "time": datetime.strptime(activity["startTimeGMT"], "%Y-%m-%d %H:%M:%S").replace(tzinfo=pytz.UTC).isoformat(),
+                    "tags": {
+                        "Device": GARMIN_DEVICENAME,
+                        "Database_Name": INFLUXDB_DATABASE,
+                        "ActivityID": activity.get('activityId'),
+                        "ActivitySelector": datetime.strptime(activity["startTimeGMT"], "%Y-%m-%d %H:%M:%S").replace(tzinfo=pytz.UTC).strftime('%Y%m%dT%H%M%SUTC-') + (activity.get('activityType') or {}).get('typeKey', "Unknown")
+                    },
+                    "fields": {
+                        "Activity_ID": activity.get('activityId'),
+                        'Device_ID': activity.get('deviceId'),
+                        'activityName': activity.get('activityName'),
+                        'activityType': (activity.get('activityType') or {}).get('typeKey',None),
+                        'elapsedDuration': activity.get('elapsedDuration'),
+                        'calories': activity.get('calories'),
+                        'bmrCalories': activity.get('bmrCalories'),
+                        'averageHR': activity.get('averageHR'),
+                        'maxHR': activity.get('maxHR'),
+                        'locationName': activity.get('locationName'),
+                        'lapCount': activity.get('lapCount'),
+                        'hrTimeInZone_1': activity.get('hrTimeInZone_1'),
+                        'hrTimeInZone_2': activity.get('hrTimeInZone_2'),
+                        'hrTimeInZone_3': activity.get('hrTimeInZone_3'),
+                        'hrTimeInZone_4': activity.get('hrTimeInZone_4'),
+                        'hrTimeInZone_5': activity.get('hrTimeInZone_5'),
+                        'sets': activity.get('activity_exercise_sets')
+                    }
+                })
+                points_list.append({
+                    "measurement":  "ActivitySummary",
+                    "time": (datetime.strptime(activity["startTimeGMT"], "%Y-%m-%d %H:%M:%S").replace(tzinfo=pytz.UTC) + timedelta(seconds=int(activity.get('elapsedDuration', 0)))).isoformat(),
+                    "tags": {
+                        "Device": GARMIN_DEVICENAME,
+                        "Database_Name": INFLUXDB_DATABASE,
+                        "ActivityID": activity.get('activityId'),
+                        "ActivitySelector": datetime.strptime(activity["startTimeGMT"], "%Y-%m-%d %H:%M:%S").replace(tzinfo=pytz.UTC).strftime('%Y%m%dT%H%M%SUTC-') + (activity.get('activityType') or {}).get('typeKey', "Unknown")
+                    },
+                    "fields": {
+                        "Activity_ID": activity.get('activityId'),
+                        'Device_ID': activity.get('deviceId'),
+                        'activityName': "END",
+                        'activityType': "No Activity",
+                    }
+                })
+                logging.info(f"Success : Fetching Activity summary with id {activity.get('activityId')} for date {date_str}")
+            else:
+                logging.warning(f"Skipped : Start Timestamp missing for activity id {activity.get('activityId')} for date {date_str}")
+    return points_list, activity_with_gps_id_dict
+
 # %%
 def fetch_activity_GPS(activityIDdict): # Uses FIT file by default, falls back to TCX
     points_list = []
@@ -1269,6 +1326,8 @@ def daily_fetch_write(date_str):
         write_points_to_influxdb(fetch_activity_GPS(activity_with_gps_id_dict))
     if 'solar_intensity' in FETCH_SELECTION:
         write_points_to_influxdb(get_solar_intensity(date_str))
+    write_points_to_influxdb(get_strength_training(date_str))
+    logging.info("Fetched strength training data")
 
 
 # %%
