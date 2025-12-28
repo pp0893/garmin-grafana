@@ -1,113 +1,4 @@
 {
-  "__inputs": [
-    {
-      "name": "DS_GARMIN_STATS",
-      "label": "Garmin Stats",
-      "description": "",
-      "type": "datasource",
-      "pluginId": "influxdb",
-      "pluginName": "InfluxDB"
-    }
-  ],
-  "__elements": {},
-  "__requires": [
-    {
-      "type": "panel",
-      "id": "barchart",
-      "name": "Bar chart",
-      "version": ""
-    },
-    {
-      "type": "panel",
-      "id": "gauge",
-      "name": "Gauge",
-      "version": ""
-    },
-    {
-      "type": "panel",
-      "id": "geomap",
-      "name": "Geomap",
-      "version": ""
-    },
-    {
-      "type": "grafana",
-      "id": "grafana",
-      "name": "Grafana",
-      "version": "12.0.1"
-    },
-    {
-      "type": "panel",
-      "id": "heatmap",
-      "name": "Heatmap",
-      "version": ""
-    },
-    {
-      "type": "panel",
-      "id": "histogram",
-      "name": "Histogram",
-      "version": ""
-    },
-    {
-      "type": "datasource",
-      "id": "influxdb",
-      "name": "InfluxDB",
-      "version": "1.0.0"
-    },
-    {
-      "type": "panel",
-      "id": "marcusolsson-hourly-heatmap-panel",
-      "name": "Hourly heatmap",
-      "version": "2.0.1"
-    },
-    {
-      "type": "panel",
-      "id": "piechart",
-      "name": "Pie chart",
-      "version": ""
-    },
-    {
-      "type": "panel",
-      "id": "stat",
-      "name": "Stat",
-      "version": ""
-    },
-    {
-      "type": "panel",
-      "id": "state-timeline",
-      "name": "State timeline",
-      "version": ""
-    },
-    {
-      "type": "panel",
-      "id": "table",
-      "name": "Table",
-      "version": ""
-    },
-    {
-      "type": "panel",
-      "id": "text",
-      "name": "Text",
-      "version": ""
-    },
-    {
-      "type": "panel",
-      "id": "timeseries",
-      "name": "Time series",
-      "version": ""
-    },
-    {
-      "type": "panel",
-      "id": "trend",
-      "name": "Trend",
-      "version": ""
-    },
-    {
-      "type": "panel",
-      "id": "xychart",
-      "name": "XY Chart",
-      "version": ""
-    }
-  ],
   "annotations": {
     "list": [
       {
@@ -127,8 +18,9 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": null,
+  "id": 1,
   "links": [],
+  "liveNow": false,
   "panels": [
     {
       "collapsed": false,
@@ -137,6 +29,1697 @@
         "w": 24,
         "x": 0,
         "y": 0
+      },
+      "id": 77,
+      "panels": [],
+      "title": "Strength training",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "garmin_influxdb"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 25,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "always",
+            "spanNulls": true,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 4,
+        "x": 0,
+        "y": 1
+      },
+      "id": 72,
+      "interval": "1d",
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "right",
+          "showLegend": false
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "10.2.1",
+      "targets": [
+        {
+          "alias": "$tag_Primary_Muscle",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "garmin_influxdb"
+          },
+          "query": "SELECT sum(\"Volume\") FROM \"Strength_set\" WHERE $timeFilter GROUP BY time($__interval), \"Primary_Muscle\"",
+          "rawQuery": true,
+          "refId": "A",
+          "resultFormat": "time_series"
+        }
+      ],
+      "title": "Load - Back",
+      "transformations": [
+        {
+          "id": "filterFieldsByName",
+          "options": {
+            "byVariable": false,
+            "include": {
+              "names": [
+                "back",
+                "Time"
+              ]
+            }
+          }
+        }
+      ],
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "garmin_influxdb"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "continuous-YlBl"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "axisSoftMin": 2500,
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": true,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "average - back"
+            },
+            "properties": [
+              {
+                "id": "custom.drawStyle",
+                "value": "line"
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 4
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "semi-dark-green",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "back"
+            },
+            "properties": [
+              {
+                "id": "custom.drawStyle",
+                "value": "points"
+              },
+              {
+                "id": "custom.pointSize",
+                "value": 10
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "light-green",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 7,
+        "x": 4,
+        "y": 1
+      },
+      "id": 78,
+      "interval": "1d",
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "alias": "average - $tag_Primary_Muscle",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "garmin_influxdb"
+          },
+          "hide": false,
+          "query": "SELECT moving_average(sum(\"Volume\"), 4)\nFROM \"Strength_set\"\nWHERE time >= now() - 52w AND (\"Primary_Muscle\"::tag = 'back')\nGROUP BY time(1d), \"Primary_Muscle\"",
+          "rawQuery": true,
+          "refId": "A",
+          "resultFormat": "time_series"
+        },
+        {
+          "alias": "$tag_Primary_Muscle",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "garmin_influxdb"
+          },
+          "hide": false,
+          "query": "SELECT sum(\"Volume\")\nFROM \"Strength_set\"\nWHERE $timeFilter AND (\"Primary_Muscle\"::tag = 'back')\nGROUP BY time($__interval), \"Primary_Muscle\"",
+          "rawQuery": true,
+          "refId": "B",
+          "resultFormat": "time_series"
+        }
+      ],
+      "title": "Evolution - back",
+      "transformations": [],
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "garmin_influxdb"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "blue",
+            "mode": "fixed"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 25,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "always",
+            "spanNulls": true,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 4,
+        "x": 12,
+        "y": 1
+      },
+      "id": 76,
+      "interval": "1d",
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "right",
+          "showLegend": false
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "10.2.1",
+      "targets": [
+        {
+          "alias": "$tag_Primary_Muscle",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "garmin_influxdb"
+          },
+          "query": "SELECT sum(\"Volume\") FROM \"Strength_set\" WHERE $timeFilter GROUP BY time($__interval), \"Primary_Muscle\"",
+          "rawQuery": true,
+          "refId": "A",
+          "resultFormat": "time_series"
+        }
+      ],
+      "title": "Load - Triceps",
+      "transformations": [
+        {
+          "id": "filterFieldsByName",
+          "options": {
+            "byVariable": false,
+            "include": {
+              "names": [
+                "Time",
+                "triceps"
+              ]
+            }
+          }
+        }
+      ],
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "garmin_influxdb"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "continuous-YlBl"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "axisSoftMin": 1100,
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": true,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "average - triceps"
+            },
+            "properties": [
+              {
+                "id": "custom.drawStyle",
+                "value": "line"
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 4
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "semi-dark-blue",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "triceps"
+            },
+            "properties": [
+              {
+                "id": "custom.drawStyle",
+                "value": "points"
+              },
+              {
+                "id": "custom.pointSize",
+                "value": 10
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "light-blue",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 7,
+        "x": 16,
+        "y": 1
+      },
+      "id": 79,
+      "interval": "1d",
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "alias": "average - $tag_Primary_Muscle",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "garmin_influxdb"
+          },
+          "hide": false,
+          "query": "SELECT moving_average(sum(\"Volume\"), 4)\nFROM \"Strength_set\"\nWHERE time >= now() - 52w AND (\"Primary_Muscle\"::tag = 'triceps')\nGROUP BY time(1d), \"Primary_Muscle\"",
+          "rawQuery": true,
+          "refId": "A",
+          "resultFormat": "time_series"
+        },
+        {
+          "alias": "$tag_Primary_Muscle",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "garmin_influxdb"
+          },
+          "hide": false,
+          "query": "SELECT sum(\"Volume\")\nFROM \"Strength_set\"\nWHERE $timeFilter AND (\"Primary_Muscle\"::tag = 'triceps')\nGROUP BY time($__interval), \"Primary_Muscle\"",
+          "rawQuery": true,
+          "refId": "B",
+          "resultFormat": "time_series"
+        }
+      ],
+      "title": "Evolution - triceps",
+      "transformations": [],
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "garmin_influxdb"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "continuous-purples"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 25,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "always",
+            "spanNulls": true,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 4,
+        "x": 0,
+        "y": 9
+      },
+      "id": 73,
+      "interval": "1d",
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "right",
+          "showLegend": false
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "10.2.1",
+      "targets": [
+        {
+          "alias": "$tag_Primary_Muscle",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "garmin_influxdb"
+          },
+          "query": "SELECT sum(\"Volume\") FROM \"Strength_set\" WHERE $timeFilter GROUP BY time($__interval), \"Primary_Muscle\"",
+          "rawQuery": true,
+          "refId": "A",
+          "resultFormat": "time_series"
+        }
+      ],
+      "title": "Load - Biceps",
+      "transformations": [
+        {
+          "id": "filterFieldsByName",
+          "options": {
+            "byVariable": false,
+            "include": {
+              "names": [
+                "Time",
+                "biceps"
+              ]
+            }
+          }
+        }
+      ],
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "garmin_influxdb"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "continuous-YlBl"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "axisSoftMin": 1100,
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": true,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "average - biceps"
+            },
+            "properties": [
+              {
+                "id": "custom.drawStyle",
+                "value": "line"
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 4
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "semi-dark-purple",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "biceps"
+            },
+            "properties": [
+              {
+                "id": "custom.drawStyle",
+                "value": "points"
+              },
+              {
+                "id": "custom.pointSize",
+                "value": 10
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "light-purple",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 7,
+        "x": 4,
+        "y": 9
+      },
+      "id": 81,
+      "interval": "1d",
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "alias": "average - $tag_Primary_Muscle",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "garmin_influxdb"
+          },
+          "hide": false,
+          "query": "SELECT moving_average(sum(\"Volume\"), 4)\nFROM \"Strength_set\"\nWHERE time >= now() - 52w AND (\"Primary_Muscle\"::tag = 'biceps')\nGROUP BY time(1d), \"Primary_Muscle\"",
+          "rawQuery": true,
+          "refId": "A",
+          "resultFormat": "time_series"
+        },
+        {
+          "alias": "$tag_Primary_Muscle",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "garmin_influxdb"
+          },
+          "hide": false,
+          "query": "SELECT sum(\"Volume\")\nFROM \"Strength_set\"\nWHERE $timeFilter AND (\"Primary_Muscle\"::tag = 'biceps')\nGROUP BY time($__interval), \"Primary_Muscle\"",
+          "rawQuery": true,
+          "refId": "B",
+          "resultFormat": "time_series"
+        }
+      ],
+      "title": "Evolution - biceps",
+      "transformations": [],
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "garmin_influxdb"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "orange",
+            "mode": "fixed"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 25,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "always",
+            "spanNulls": true,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 4,
+        "x": 12,
+        "y": 9
+      },
+      "id": 75,
+      "interval": "1d",
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "right",
+          "showLegend": false
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "10.2.1",
+      "targets": [
+        {
+          "alias": "$tag_Primary_Muscle",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "garmin_influxdb"
+          },
+          "query": "SELECT sum(\"Volume\") FROM \"Strength_set\" WHERE $timeFilter GROUP BY time($__interval), \"Primary_Muscle\"",
+          "rawQuery": true,
+          "refId": "A",
+          "resultFormat": "time_series"
+        }
+      ],
+      "title": "Load - Shoulders",
+      "transformations": [
+        {
+          "id": "filterFieldsByName",
+          "options": {
+            "byVariable": false,
+            "include": {
+              "names": [
+                "Time",
+                "shoulders"
+              ]
+            }
+          }
+        }
+      ],
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "garmin_influxdb"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "continuous-YlBl"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "axisSoftMin": 1100,
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": true,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "average - shoulders"
+            },
+            "properties": [
+              {
+                "id": "custom.drawStyle",
+                "value": "line"
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 4
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "semi-dark-orange",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "shoulders"
+            },
+            "properties": [
+              {
+                "id": "custom.drawStyle",
+                "value": "points"
+              },
+              {
+                "id": "custom.pointSize",
+                "value": 10
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "light-orange",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 7,
+        "x": 16,
+        "y": 9
+      },
+      "id": 80,
+      "interval": "1d",
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "alias": "average - $tag_Primary_Muscle",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "garmin_influxdb"
+          },
+          "hide": false,
+          "query": "SELECT moving_average(sum(\"Volume\"), 4)\nFROM \"Strength_set\"\nWHERE time >= now() - 52w AND (\"Primary_Muscle\"::tag = 'shoulders')\nGROUP BY time(1d), \"Primary_Muscle\"",
+          "rawQuery": true,
+          "refId": "A",
+          "resultFormat": "time_series"
+        },
+        {
+          "alias": "$tag_Primary_Muscle",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "garmin_influxdb"
+          },
+          "hide": false,
+          "query": "SELECT sum(\"Volume\")\nFROM \"Strength_set\"\nWHERE $timeFilter AND (\"Primary_Muscle\"::tag = 'shoulders')\nGROUP BY time($__interval), \"Primary_Muscle\"",
+          "rawQuery": true,
+          "refId": "B",
+          "resultFormat": "time_series"
+        }
+      ],
+      "title": "Evolution - shoulders",
+      "transformations": [],
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "garmin_influxdb"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "yellow",
+            "mode": "fixed"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 25,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "always",
+            "spanNulls": true,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 4,
+        "x": 0,
+        "y": 17
+      },
+      "id": 74,
+      "interval": "1d",
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "right",
+          "showLegend": false
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "10.2.1",
+      "targets": [
+        {
+          "alias": "$tag_Primary_Muscle",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "garmin_influxdb"
+          },
+          "query": "SELECT sum(\"Volume\") FROM \"Strength_set\" WHERE $timeFilter GROUP BY time($__interval), \"Primary_Muscle\"",
+          "rawQuery": true,
+          "refId": "A",
+          "resultFormat": "time_series"
+        }
+      ],
+      "title": "Load - Chest",
+      "transformations": [
+        {
+          "id": "filterFieldsByName",
+          "options": {
+            "byVariable": false,
+            "include": {
+              "names": [
+                "Time",
+                "chest"
+              ]
+            }
+          }
+        }
+      ],
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "garmin_influxdb"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "continuous-YlBl"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "axisSoftMin": 1100,
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": true,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "average - chest"
+            },
+            "properties": [
+              {
+                "id": "custom.drawStyle",
+                "value": "line"
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 4
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "semi-dark-yellow",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "chest"
+            },
+            "properties": [
+              {
+                "id": "custom.drawStyle",
+                "value": "points"
+              },
+              {
+                "id": "custom.pointSize",
+                "value": 10
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "light-yellow",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 7,
+        "x": 4,
+        "y": 17
+      },
+      "id": 82,
+      "interval": "1d",
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "alias": "average - $tag_Primary_Muscle",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "garmin_influxdb"
+          },
+          "hide": false,
+          "query": "SELECT moving_average(sum(\"Volume\"), 4)\nFROM \"Strength_set\"\nWHERE time >= now() - 52w AND (\"Primary_Muscle\"::tag = 'chest')\nGROUP BY time(1d), \"Primary_Muscle\"",
+          "rawQuery": true,
+          "refId": "A",
+          "resultFormat": "time_series"
+        },
+        {
+          "alias": "$tag_Primary_Muscle",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "garmin_influxdb"
+          },
+          "hide": false,
+          "query": "SELECT sum(\"Volume\")\nFROM \"Strength_set\"\nWHERE $timeFilter AND (\"Primary_Muscle\"::tag = 'chest')\nGROUP BY time($__interval), \"Primary_Muscle\"",
+          "rawQuery": true,
+          "refId": "B",
+          "resultFormat": "time_series"
+        }
+      ],
+      "title": "Evolution - chest",
+      "transformations": [],
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "garmin_influxdb"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "scaleDistribution": {
+              "type": "linear"
+            }
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 20,
+        "x": 0,
+        "y": 25
+      },
+      "id": 71,
+      "interval": "6d",
+      "maxDataPoints": 500,
+      "options": {
+        "calculate": false,
+        "cellGap": 1,
+        "color": {
+          "exponent": 0.5,
+          "fill": "dark-orange",
+          "mode": "scheme",
+          "reverse": false,
+          "scale": "exponential",
+          "scheme": "RdYlGn",
+          "steps": 37
+        },
+        "exemplars": {
+          "color": "rgba(255,0,255,0.7)"
+        },
+        "filterValues": {
+          "le": 1e-9
+        },
+        "legend": {
+          "show": true
+        },
+        "rowsFrame": {
+          "layout": "auto"
+        },
+        "tooltip": {
+          "show": true,
+          "yHistogram": false
+        },
+        "yAxis": {
+          "axisPlacement": "left",
+          "reverse": false
+        }
+      },
+      "pluginVersion": "10.2.1",
+      "targets": [
+        {
+          "alias": "$tag_Primary_Muscle",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "garmin_influxdb"
+          },
+          "groupBy": [
+            {
+              "params": [
+                "$__interval"
+              ],
+              "type": "time"
+            }
+          ],
+          "measurement": "Strength_set",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "query": "SELECT sum(\"Volume\") FROM \"Strength_set\" WHERE $timeFilter GROUP BY time($__interval), \"Primary_Muscle\"",
+          "rawQuery": true,
+          "refId": "A",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "Volume"
+                ],
+                "type": "field"
+              }
+            ]
+          ],
+          "tags": []
+        }
+      ],
+      "title": "Heatmap - Muscle load",
+      "type": "heatmap"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "garmin_influxdb"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "filterable": true,
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Time"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 122
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "ActivityName"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 218
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Primary_Muscle"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 119
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Category"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 123
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Repetitions"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 162
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Subcategory"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 267
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 20,
+        "x": 0,
+        "y": 33
+      },
+      "id": 70,
+      "interval": "6d",
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "enablePagination": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "frameIndex": 0,
+        "showHeader": true,
+        "sortBy": [
+          {
+            "desc": true,
+            "displayName": "Time"
+          }
+        ]
+      },
+      "pluginVersion": "10.2.1",
+      "targets": [
+        {
+          "alias": "$col",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "garmin_influxdb"
+          },
+          "groupBy": [],
+          "measurement": "Strength_set",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "query": "SELECT \"ActivityName\", \"Primary_Muscle\", \"Category\", \"Subcategory\", \"Repetitions\", \"Weight\", \"Volume\", \"Duration\"  FROM \"Strength_set\" WHERE $timeFilter",
+          "rawQuery": true,
+          "refId": "A",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "ActivityName"
+                ],
+                "type": "field"
+              }
+            ],
+            [
+              {
+                "params": [
+                  "Category"
+                ],
+                "type": "field"
+              }
+            ],
+            [
+              {
+                "params": [
+                  "Subcategory"
+                ],
+                "type": "field"
+              }
+            ],
+            [
+              {
+                "params": [
+                  "Repetitions"
+                ],
+                "type": "field"
+              }
+            ],
+            [
+              {
+                "params": [
+                  "Weight"
+                ],
+                "type": "field"
+              }
+            ],
+            [
+              {
+                "params": [
+                  "Duration"
+                ],
+                "type": "field"
+              }
+            ],
+            [
+              {
+                "params": [
+                  "Primary_Muscle"
+                ],
+                "type": "field"
+              }
+            ],
+            [
+              {
+                "params": [
+                  "Volume"
+                ],
+                "type": "field"
+              }
+            ]
+          ],
+          "tags": []
+        }
+      ],
+      "title": "Detailed strength training",
+      "transformations": [
+        {
+          "id": "joinByField",
+          "options": {
+            "mode": "outer"
+          }
+        },
+        {
+          "id": "formatTime",
+          "options": {
+            "outputFormat": "DD MMM YYYY",
+            "timeField": "Time",
+            "useTimezone": true
+          }
+        }
+      ],
+      "type": "table"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 40
       },
       "id": 14,
       "panels": [],
@@ -148,7 +1731,7 @@
         "h": 3,
         "w": 3,
         "x": 0,
-        "y": 1
+        "y": 41
       },
       "id": 25,
       "options": {
@@ -160,7 +1743,7 @@
         "content": "<center><a href='https://ko-fi.com/A0A84F3DP' target='_blank'><img height='36' style='border:0px;height:36px;' src='https://storage.ko-fi.com/cdn/kofi2.png?v=6' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a></center>  ",
         "mode": "html"
       },
-      "pluginVersion": "12.0.1",
+      "pluginVersion": "10.2.1",
       "title": "Support Me!",
       "transparent": true,
       "type": "text"
@@ -182,7 +1765,6 @@
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
-            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 20,
             "gradientMode": "scheme",
@@ -236,7 +1818,7 @@
         "h": 9,
         "w": 21,
         "x": 3,
-        "y": 1
+        "y": 41
       },
       "id": 15,
       "options": {
@@ -382,7 +1964,7 @@
         "h": 3,
         "w": 3,
         "x": 0,
-        "y": 4
+        "y": 44
       },
       "hideTimeOverride": true,
       "id": 26,
@@ -403,7 +1985,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "12.0.1",
+      "pluginVersion": "10.2.1",
       "targets": [
         {
           "datasource": {
@@ -456,11 +2038,7 @@
               "tooltip": false,
               "viz": false
             },
-            "lineWidth": 1,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            }
+            "lineWidth": 1
           },
           "fieldMinMax": true,
           "mappings": [],
@@ -509,7 +2087,7 @@
         "h": 4,
         "w": 3,
         "x": 0,
-        "y": 7
+        "y": 47
       },
       "hideTimeOverride": true,
       "id": 21,
@@ -683,7 +2261,6 @@
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
-            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 20,
             "gradientMode": "scheme",
@@ -754,7 +2331,7 @@
         "h": 8,
         "w": 21,
         "x": 3,
-        "y": 10
+        "y": 50
       },
       "id": 29,
       "options": {
@@ -924,7 +2501,7 @@
         "h": 5,
         "w": 3,
         "x": 0,
-        "y": 11
+        "y": 51
       },
       "id": 28,
       "options": {
@@ -943,7 +2520,7 @@
         "sizing": "auto",
         "text": {}
       },
-      "pluginVersion": "12.0.1",
+      "pluginVersion": "10.2.1",
       "targets": [
         {
           "datasource": {
@@ -1040,7 +2617,7 @@
         "h": 6,
         "w": 3,
         "x": 0,
-        "y": 16
+        "y": 56
       },
       "id": 30,
       "options": {
@@ -1059,7 +2636,7 @@
         "sizing": "auto",
         "text": {}
       },
-      "pluginVersion": "12.0.1",
+      "pluginVersion": "10.2.1",
       "targets": [
         {
           "datasource": {
@@ -1130,7 +2707,6 @@
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
-            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 0,
             "gradientMode": "scheme",
@@ -1189,7 +2765,7 @@
         "h": 8,
         "w": 21,
         "x": 3,
-        "y": 18
+        "y": 58
       },
       "id": 16,
       "options": {
@@ -1347,7 +2923,7 @@
         "h": 6,
         "w": 3,
         "x": 0,
-        "y": 22
+        "y": 62
       },
       "id": 31,
       "options": {
@@ -1366,7 +2942,7 @@
         "sizing": "auto",
         "text": {}
       },
-      "pluginVersion": "12.0.1",
+      "pluginVersion": "10.2.1",
       "targets": [
         {
           "datasource": {
@@ -1431,7 +3007,6 @@
             "mode": "continuous-greens"
           },
           "custom": {
-            "axisPlacement": "auto",
             "fillOpacity": 70,
             "hideFrom": {
               "legend": false,
@@ -1460,7 +3035,7 @@
         "h": 3,
         "w": 21,
         "x": 3,
-        "y": 26
+        "y": 66
       },
       "id": 68,
       "options": {
@@ -1580,7 +3155,7 @@
         "h": 6,
         "w": 3,
         "x": 0,
-        "y": 28
+        "y": 68
       },
       "hideTimeOverride": true,
       "id": 32,
@@ -1599,7 +3174,7 @@
         "showThresholdMarkers": true,
         "sizing": "auto"
       },
-      "pluginVersion": "12.0.1",
+      "pluginVersion": "10.2.1",
       "targets": [
         {
           "alias": "Total Asleep",
@@ -1666,7 +3241,6 @@
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
-            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 23,
             "gradientMode": "none",
@@ -1728,7 +3302,7 @@
         "h": 7,
         "w": 21,
         "x": 3,
-        "y": 29
+        "y": 69
       },
       "id": 62,
       "options": {
@@ -1894,7 +3468,7 @@
         "h": 7,
         "w": 3,
         "x": 0,
-        "y": 34
+        "y": 74
       },
       "id": 33,
       "options": {
@@ -1912,7 +3486,7 @@
         "showThresholdMarkers": true,
         "sizing": "auto"
       },
-      "pluginVersion": "12.0.1",
+      "pluginVersion": "10.2.1",
       "targets": [
         {
           "alias": "Stress",
@@ -1978,7 +3552,6 @@
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
-            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 23,
             "gradientMode": "none",
@@ -2040,7 +3613,7 @@
         "h": 7,
         "w": 21,
         "x": 3,
-        "y": 36
+        "y": 76
       },
       "id": 52,
       "options": {
@@ -2180,7 +3753,7 @@
         "h": 9,
         "w": 3,
         "x": 0,
-        "y": 41
+        "y": 81
       },
       "hideTimeOverride": true,
       "id": 36,
@@ -2414,7 +3987,6 @@
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
-            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 23,
             "gradientMode": "none",
@@ -2551,7 +4123,7 @@
         "h": 9,
         "w": 21,
         "x": 3,
-        "y": 43
+        "y": 83
       },
       "id": 7,
       "options": {
@@ -2807,7 +4379,7 @@
         "h": 9,
         "w": 3,
         "x": 0,
-        "y": 50
+        "y": 90
       },
       "hideTimeOverride": true,
       "id": 35,
@@ -3044,7 +4616,6 @@
             "axisLabel": "",
             "axisPlacement": "hidden",
             "barAlignment": 0,
-            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 100,
             "gradientMode": "none",
@@ -3170,7 +4741,7 @@
         "h": 7,
         "w": 21,
         "x": 3,
-        "y": 52
+        "y": 92
       },
       "id": 6,
       "options": {
@@ -3328,7 +4899,7 @@
         "h": 9,
         "w": 5,
         "x": 0,
-        "y": 59
+        "y": 99
       },
       "id": 43,
       "options": {
@@ -3598,7 +5169,7 @@
         "h": 9,
         "w": 5,
         "x": 5,
-        "y": 59
+        "y": 99
       },
       "id": 44,
       "options": {
@@ -3744,7 +5315,7 @@
         "h": 9,
         "w": 4,
         "x": 10,
-        "y": 59
+        "y": 99
       },
       "id": 48,
       "options": {
@@ -3976,7 +5547,7 @@
         "h": 9,
         "w": 5,
         "x": 14,
-        "y": 59
+        "y": 99
       },
       "id": 53,
       "options": {
@@ -4157,7 +5728,7 @@
         "h": 9,
         "w": 5,
         "x": 19,
-        "y": 59
+        "y": 99
       },
       "id": 54,
       "options": {
@@ -4245,7 +5816,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 68
+        "y": 108
       },
       "id": 42,
       "panels": [],
@@ -4260,7 +5831,7 @@
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "continuous-purples"
+            "mode": "continuous-GrYlRd"
           },
           "custom": {
             "hideFrom": {
@@ -4306,7 +5877,7 @@
         "h": 11,
         "w": 12,
         "x": 0,
-        "y": 69
+        "y": 109
       },
       "id": 50,
       "options": {
@@ -4367,10 +5938,6 @@
                 }
               }
             },
-            "filterData": {
-              "id": "byRefId",
-              "options": "joinByField-I-J-A-B"
-            },
             "location": {
               "mode": "auto"
             },
@@ -4395,7 +5962,7 @@
           "zoom": 16
         }
       },
-      "pluginVersion": "12.0.1",
+      "pluginVersion": "10.2.1",
       "targets": [
         {
           "alias": "lat",
@@ -4421,13 +5988,6 @@
                 "type": "field"
               }
             ]
-          ],
-          "tags": [
-            {
-              "key": "ActivitySelector::tag",
-              "operator": "=~",
-              "value": "/^$ActivityGPS$/"
-            }
           ]
         },
         {
@@ -4454,13 +6014,6 @@
                 "type": "field"
               }
             ]
-          ],
-          "tags": [
-            {
-              "key": "ActivitySelector::tag",
-              "operator": "=~",
-              "value": "/^$ActivityGPS$/"
-            }
           ]
         },
         {
@@ -4487,13 +6040,6 @@
                 "type": "field"
               }
             ]
-          ],
-          "tags": [
-            {
-              "key": "ActivitySelector::tag",
-              "operator": "=~",
-              "value": "/^$ActivityGPS$/"
-            }
           ]
         },
         {
@@ -4526,13 +6072,6 @@
                 "type": "math"
               }
             ]
-          ],
-          "tags": [
-            {
-              "key": "ActivitySelector::tag",
-              "operator": "=~",
-              "value": "/^$ActivityGPS$/"
-            }
           ]
         }
       ],
@@ -4603,7 +6142,7 @@
         "h": 11,
         "w": 12,
         "x": 12,
-        "y": 69
+        "y": 109
       },
       "id": 49,
       "options": {
@@ -4711,10 +6250,6 @@
                 }
               }
             },
-            "filterData": {
-              "id": "byRefId",
-              "options": "joinByField-I-J-A-B"
-            },
             "location": {
               "mode": "auto"
             },
@@ -4739,7 +6274,7 @@
           "zoom": 16
         }
       },
-      "pluginVersion": "12.0.1",
+      "pluginVersion": "10.2.1",
       "targets": [
         {
           "alias": "lat",
@@ -4765,13 +6300,6 @@
                 "type": "field"
               }
             ]
-          ],
-          "tags": [
-            {
-              "key": "ActivitySelector::tag",
-              "operator": "=~",
-              "value": "/^$ActivityGPS$/"
-            }
           ]
         },
         {
@@ -4798,13 +6326,6 @@
                 "type": "field"
               }
             ]
-          ],
-          "tags": [
-            {
-              "key": "ActivitySelector::tag",
-              "operator": "=~",
-              "value": "/^$ActivityGPS$/"
-            }
           ]
         },
         {
@@ -4831,13 +6352,6 @@
                 "type": "field"
               }
             ]
-          ],
-          "tags": [
-            {
-              "key": "ActivitySelector::tag",
-              "operator": "=~",
-              "value": "/^$ActivityGPS$/"
-            }
           ]
         },
         {
@@ -4864,13 +6378,6 @@
                 "type": "field"
               }
             ]
-          ],
-          "tags": [
-            {
-              "key": "ActivitySelector::tag",
-              "operator": "=~",
-              "value": "/^$ActivityGPS$/"
-            }
           ]
         }
       ],
@@ -4974,7 +6481,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 80
+        "y": 120
       },
       "id": 45,
       "options": {
@@ -5030,13 +6537,6 @@
                 "type": "field"
               }
             ]
-          ],
-          "tags": [
-            {
-              "key": "ActivitySelector::tag",
-              "operator": "=~",
-              "value": "/^$ActivityGPS$/"
-            }
           ]
         }
       ],
@@ -5144,24 +6644,22 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 88
+        "y": 128
       },
       "id": 61,
       "options": {
         "barRadius": 0,
         "barWidth": 0.97,
-        "colorByField": "Heart Rate",
+        "colorByField": "Cadence",
         "fullHighlight": true,
         "groupWidth": 1,
         "legend": {
           "calcs": [
-            "min",
-            "max",
-            "median"
+            "mean"
           ],
           "displayMode": "table",
-          "placement": "bottom",
-          "showLegend": true,
+          "placement": "right",
+          "showLegend": false,
           "sortBy": "Name",
           "sortDesc": true
         },
@@ -5209,13 +6707,6 @@
                 "type": "math"
               }
             ]
-          ],
-          "tags": [
-            {
-              "key": "ActivitySelector::tag",
-              "operator": "=~",
-              "value": "/^$ActivityGPS$/"
-            }
           ]
         }
       ],
@@ -5260,7 +6751,6 @@
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
-            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 0,
             "gradientMode": "none",
@@ -5357,7 +6847,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 96
+        "y": 136
       },
       "id": 57,
       "options": {
@@ -5554,17 +7044,14 @@
             "axisColorMode": "text",
             "axisLabel": "",
             "axisPlacement": "auto",
-            "fillOpacity": 34,
             "hideFrom": {
               "legend": false,
               "tooltip": false,
               "viz": false
             },
-            "pointShape": "circle",
             "pointSize": {
               "fixed": 5
             },
-            "pointStrokeWidth": 0,
             "scaleDistribution": {
               "type": "linear"
             },
@@ -5621,7 +7108,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 104
+        "y": 144
       },
       "id": 55,
       "options": {
@@ -5654,6 +7141,7 @@
             }
           }
         ],
+        "seriesMapping": "auto",
         "tooltip": {
           "hideZeros": false,
           "mode": "single",
@@ -5850,7 +7338,7 @@
         "h": 7,
         "w": 24,
         "x": 0,
-        "y": 112
+        "y": 152
       },
       "id": 47,
       "options": {
@@ -6137,7 +7625,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 119
+        "y": 159
       },
       "id": 46,
       "options": {
@@ -6427,7 +7915,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 127
+        "y": 167
       },
       "id": 38,
       "options": {
@@ -6452,7 +7940,7 @@
           }
         ]
       },
-      "pluginVersion": "12.0.0",
+      "pluginVersion": "10.2.1",
       "targets": [
         {
           "alias": "Activity Type",
@@ -6664,7 +8152,6 @@
           "tz": "$TimeZone"
         }
       ],
-      "timeFrom": "1w",
       "title": "Recent Activity",
       "transformations": [
         {
@@ -6689,7 +8176,6 @@
             "mode": "fixed"
           },
           "custom": {
-            "axisPlacement": "auto",
             "fillOpacity": 70,
             "hideFrom": {
               "legend": false,
@@ -6741,7 +8227,7 @@
         "h": 4,
         "w": 24,
         "x": 0,
-        "y": 135
+        "y": 175
       },
       "id": 41,
       "options": {
@@ -6799,7 +8285,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 139
+        "y": 179
       },
       "id": 9,
       "panels": [],
@@ -7067,7 +8553,7 @@
         "h": 11,
         "w": 24,
         "x": 0,
-        "y": 140
+        "y": 180
       },
       "hideTimeOverride": false,
       "id": 59,
@@ -7090,7 +8576,7 @@
           }
         ]
       },
-      "pluginVersion": "12.0.0",
+      "pluginVersion": "10.2.1",
       "targets": [
         {
           "alias": "Distance Covered",
@@ -7498,7 +8984,7 @@
         "h": 9,
         "w": 8,
         "x": 0,
-        "y": 151
+        "y": 191
       },
       "id": 1,
       "options": {
@@ -7630,7 +9116,7 @@
         "h": 9,
         "w": 8,
         "x": 8,
-        "y": 151
+        "y": 191
       },
       "id": 3,
       "options": {
@@ -7793,7 +9279,7 @@
         "h": 9,
         "w": 8,
         "x": 16,
-        "y": 151
+        "y": 191
       },
       "id": 10,
       "options": {
@@ -7949,7 +9435,6 @@
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
-            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 17,
             "gradientMode": "opacity",
@@ -8071,7 +9556,7 @@
         "h": 9,
         "w": 12,
         "x": 0,
-        "y": 160
+        "y": 200
       },
       "id": 11,
       "options": {
@@ -8243,7 +9728,6 @@
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
-            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 17,
             "gradientMode": "opacity",
@@ -8381,7 +9865,7 @@
         "h": 9,
         "w": 12,
         "x": 12,
-        "y": 160
+        "y": 200
       },
       "id": 51,
       "options": {
@@ -8553,7 +10037,6 @@
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
-            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 17,
             "gradientMode": "opacity",
@@ -8660,7 +10143,7 @@
         "h": 10,
         "w": 8,
         "x": 0,
-        "y": 169
+        "y": 209
       },
       "id": 63,
       "options": {
@@ -8876,7 +10359,6 @@
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
-            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 42,
             "gradientMode": "opacity",
@@ -8987,7 +10469,7 @@
         "h": 10,
         "w": 8,
         "x": 8,
-        "y": 169
+        "y": 209
       },
       "id": 64,
       "options": {
@@ -9096,7 +10578,7 @@
         "h": 10,
         "w": 8,
         "x": 16,
-        "y": 169
+        "y": 209
       },
       "id": 69,
       "options": {
@@ -9201,7 +10683,7 @@
           "zoom": 16
         }
       },
-      "pluginVersion": "12.0.0",
+      "pluginVersion": "10.2.1",
       "targets": [
         {
           "alias": "lat",
@@ -9390,7 +10872,7 @@
         "h": 11,
         "w": 9,
         "x": 0,
-        "y": 179
+        "y": 219
       },
       "id": 13,
       "options": {
@@ -9704,7 +11186,7 @@
         "h": 11,
         "w": 7,
         "x": 9,
-        "y": 179
+        "y": 219
       },
       "id": 23,
       "options": {
@@ -9965,7 +11447,7 @@
         "h": 11,
         "w": 8,
         "x": 16,
-        "y": 179
+        "y": 219
       },
       "id": 12,
       "options": {
@@ -10070,7 +11552,7 @@
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "thresholds"
+            "mode": "palette-classic"
           },
           "custom": {
             "axisBorderShow": false,
@@ -10078,166 +11560,68 @@
             "axisColorMode": "text",
             "axisLabel": "",
             "axisPlacement": "auto",
-            "fillOpacity": 92,
-            "gradientMode": "scheme",
+            "barAlignment": 0,
+            "drawStyle": "bars",
+            "fillOpacity": 100,
+            "gradientMode": "hue",
             "hideFrom": {
               "legend": false,
               "tooltip": false,
               "viz": false
             },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
             "lineWidth": 1,
+            "pointSize": 5,
             "scaleDistribution": {
               "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "percent"
             },
             "thresholdsStyle": {
               "mode": "off"
             }
           },
           "mappings": [],
-          "min": 0,
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
-                "color": "super-light-red"
+                "color": "green"
               },
               {
-                "color": "green",
-                "value": 8000
-              }
-            ]
-          },
-          "unit": "dthms"
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Vigorous Intensity"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "light-red",
-                  "mode": "fixed"
-                }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Moderate Intensity"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "light-yellow",
-                  "mode": "fixed"
-                }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Sleeping"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "dark-blue",
-                  "mode": "fixed"
-                }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Sedentary"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "super-light-blue",
-                  "mode": "fixed"
-                }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Highly Active"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "red",
-                  "mode": "fixed"
-                }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Active"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "light-orange",
-                  "mode": "fixed"
-                }
+                "color": "red",
+                "value": 80
               }
             ]
           }
-        ]
+        },
+        "overrides": []
       },
       "gridPos": {
         "h": 11,
         "w": 9,
         "x": 0,
-        "y": 190
+        "y": 230
       },
       "id": 17,
       "options": {
-        "barRadius": 0,
-        "barWidth": 0.52,
-        "colorByField": "Value",
-        "fullHighlight": false,
-        "groupWidth": 0.7,
         "legend": {
-          "calcs": [
-            "mean",
-            "max",
-            "min"
-          ],
-          "displayMode": "table",
-          "placement": "bottom",
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "right",
           "showLegend": true
         },
-        "orientation": "auto",
-        "showValue": "auto",
-        "stacking": "normal",
         "tooltip": {
-          "hideZeros": false,
           "mode": "single",
           "sort": "none"
-        },
-        "xField": "Time",
-        "xTickLabelRotation": 0,
-        "xTickLabelSpacing": 100
+        }
       },
-      "pluginVersion": "12.0.0",
+      "pluginVersion": "10.2.1",
       "targets": [
         {
           "alias": "Sleeping",
@@ -10412,7 +11796,7 @@
         }
       ],
       "title": "Daily Activity Overview",
-      "type": "barchart"
+      "type": "timeseries"
     },
     {
       "datasource": {
@@ -10494,7 +11878,7 @@
         "h": 11,
         "w": 8,
         "x": 9,
-        "y": 190
+        "y": 230
       },
       "id": 19,
       "options": {
@@ -10707,7 +12091,7 @@
         "h": 11,
         "w": 7,
         "x": 17,
-        "y": 190
+        "y": 230
       },
       "id": 4,
       "options": {
@@ -11060,7 +12444,7 @@
         "h": 14,
         "w": 10,
         "x": 0,
-        "y": 201
+        "y": 241
       },
       "id": 18,
       "options": {
@@ -11398,7 +12782,7 @@
         "h": 6,
         "w": 7,
         "x": 10,
-        "y": 201
+        "y": 241
       },
       "id": 22,
       "options": {
@@ -11694,7 +13078,7 @@
         "h": 7,
         "w": 7,
         "x": 17,
-        "y": 201
+        "y": 241
       },
       "id": 37,
       "options": {
@@ -11866,7 +13250,6 @@
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
-            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 27,
             "gradientMode": "opacity",
@@ -11951,7 +13334,7 @@
         "h": 8,
         "w": 7,
         "x": 10,
-        "y": 207
+        "y": 247
       },
       "id": 34,
       "options": {
@@ -12102,7 +13485,7 @@
         "h": 7,
         "w": 7,
         "x": 17,
-        "y": 208
+        "y": 248
       },
       "id": 58,
       "options": {
@@ -12269,7 +13652,6 @@
             "mode": "thresholds"
           },
           "custom": {
-            "axisPlacement": "auto",
             "fillOpacity": 70,
             "hideFrom": {
               "legend": false,
@@ -12514,7 +13896,7 @@
         "h": 11,
         "w": 24,
         "x": 0,
-        "y": 215
+        "y": 255
       },
       "id": 66,
       "options": {
@@ -12938,7 +14320,6 @@
             "mode": "thresholds"
           },
           "custom": {
-            "axisPlacement": "auto",
             "fillOpacity": 85,
             "hideFrom": {
               "legend": false,
@@ -13099,7 +14480,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 226
+        "y": 266
       },
       "id": 67,
       "options": {
@@ -13359,7 +14740,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 234
+        "y": 274
       },
       "id": 65,
       "options": {
@@ -13401,6 +14782,7 @@
         },
         "tooltip": {
           "mode": "single",
+          "show": true,
           "showColorScale": true,
           "yHistogram": true
         },
@@ -13410,7 +14792,7 @@
           "unit": "BPM"
         }
       },
-      "pluginVersion": "12.0.0",
+      "pluginVersion": "10.2.1",
       "targets": [
         {
           "alias": "Heart Rate",
@@ -13465,42 +14847,11 @@
         "uid": "garmin_influxdb"
       },
       "description": "",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "continuous-GrYlRd"
-          },
-          "custom": {
-            "calculation": "sum",
-            "colorPalette": "interpolateYlOrRd",
-            "colorSpace": "hsl",
-            "groupBy": 60,
-            "invertPalette": false,
-            "nullValueColor": "rgb(155, 155, 155)"
-          },
-          "mappings": [],
-          "max": 1500,
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "dark-red"
-              },
-              {
-                "color": "light-yellow",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "short"
-        },
-        "overrides": []
-      },
       "gridPos": {
         "h": 10,
         "w": 12,
         "x": 0,
-        "y": 242
+        "y": 282
       },
       "id": 20,
       "options": {
@@ -13576,57 +14927,11 @@
         "uid": "garmin_influxdb"
       },
       "description": "",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "continuous-RdYlGr"
-          },
-          "custom": {
-            "calculation": "sum",
-            "colorPalette": "interpolateReds",
-            "colorSpace": "rgb",
-            "groupBy": 60,
-            "invertPalette": false,
-            "nullValueColor": "rgb(155, 155, 155)"
-          },
-          "decimals": 2,
-          "mappings": [
-            {
-              "options": {
-                "asleep": {
-                  "index": 1,
-                  "text": "0"
-                },
-                "awake": {
-                  "index": 0,
-                  "text": "1"
-                }
-              },
-              "type": "value"
-            }
-          ],
-          "max": 0.6,
-          "min": 0,
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green"
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
       "gridPos": {
         "h": 10,
         "w": 12,
         "x": 12,
-        "y": 242
+        "y": 282
       },
       "id": 27,
       "options": {
@@ -13738,7 +15043,6 @@
             "axisLabel": "",
             "axisPlacement": "left",
             "barAlignment": 0,
-            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 65,
             "gradientMode": "opacity",
@@ -13803,7 +15107,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 252
+        "y": 292
       },
       "id": 60,
       "options": {
@@ -13864,7 +15168,7 @@
     }
   ],
   "refresh": "5m",
-  "schemaVersion": 41,
+  "schemaVersion": 38,
   "tags": [],
   "templating": {
     "list": [
@@ -13877,7 +15181,11 @@
         },
         "definition": "SHOW TAG VALUES FROM \"ActivityGPS\" WITH KEY = \"ActivitySelector\" WHERE $timeFilter",
         "description": "List of Activities dropdown",
+        "error": {},
+        "hide": 0,
+        "includeAll": false,
         "label": "Activity with GPS",
+        "multi": false,
         "name": "ActivityGPS",
         "options": [],
         "query": {
@@ -13886,16 +15194,21 @@
         },
         "refresh": 1,
         "regex": "",
+        "skipUrlSync": false,
         "sort": 4,
         "type": "query"
       },
       {
         "current": {
+          "selected": false,
           "text": "Europe/Budapest",
           "value": "Europe/Budapest"
         },
         "description": "Your local time zone for grouping stats",
+        "hide": 0,
+        "includeAll": false,
         "label": "Local Time Zone",
+        "multi": false,
         "name": "TimeZone",
         "options": [
           {
@@ -14150,18 +15463,20 @@
           }
         ],
         "query": "Europe/London, Europe/Paris, Europe/Berlin, Europe/Madrid, Europe/Rome, Europe/Amsterdam, Europe/Brussels, Europe/Zurich, Europe/Stockholm, Europe/Warsaw, Europe/Budapest, Europe/Istanbul, Europe/Athens, Europe/Moscow, America/New_York, America/Chicago, America/Denver, America/Los_Angeles, America/Toronto, America/Vancouver, America/Mexico_City, America/Sao_Paulo, America/Buenos_Aires, America/Lima, America/Bogota, Africa/Johannesburg, Africa/Cairo, Africa/Nairobi, Africa/Lagos, Asia/Tokyo, Asia/Seoul, Asia/Shanghai, Asia/Singapore, Asia/Kolkata, Asia/Bangkok, Asia/Dubai, Asia/Hong_Kong, Asia/Kuala_Lumpur, Asia/Jakarta, Asia/Manila, Asia/Taipei, Asia/Karachi, Asia/Colombo, Asia/Ho_Chi_Minh, Australia/Sydney, Australia/Melbourne, Australia/Brisbane, Australia/Perth, Pacific/Auckland, Pacific/Honolulu",
+        "queryValue": "",
+        "skipUrlSync": false,
         "type": "custom"
       }
     ]
   },
   "time": {
-    "from": "now-30d",
+    "from": "now-60d",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "browser",
   "title": "Garmin Stats",
   "uid": "feiibsx498gsgb",
-  "version": 217,
+  "version": 26,
   "weekStart": ""
 }
