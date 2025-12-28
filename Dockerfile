@@ -15,4 +15,4 @@ RUN uv sync --locked
 RUN groupadd --gid 1000 appuser && useradd --uid 1000 --gid appuser --shell /bin/bash --create-home appuser && chown -R appuser:appuser /app
 USER appuser
 
-CMD ["uv", "run", "garmin_grafana/garmin_fetch.py"]
+CMD ["uv", "run", "python", "-m", "garmin_grafana.garmin_fetch"]
