@@ -1,6 +1,7 @@
 # %%
 import base64, requests, time, pytz, logging, os, sys, dotenv, io, zipfile
 from fitparse import FitFile, FitParseError
+from garmin_grafana.profile import FIELD_TYPES
 from datetime import datetime, timedelta
 from influxdb import InfluxDBClient
 from influxdb.exceptions import InfluxDBClientError
@@ -13,6 +14,120 @@ from garminconnect import (
     GarminConnectConnectionError,
     GarminConnectTooManyRequestsError,
 )
+
+GARMIN_EXERCISE_PRIMARY_MUSCLE = {
+
+    # ───────────── CHEST ─────────────
+    "barbell_bench_press": "chest",
+    "dumbbell_bench_press": "chest",
+    "incline_barbell_bench_press": "chest",
+    "incline_dumbbell_bench_press": "chest",
+    "decline_barbell_bench_press": "chest",
+    "decline_dumbbell_bench_press": "chest",
+    "chest_press": "chest",
+    "push_up": "chest",
+    "weighted_push_up": "chest",
+    "chest_fly": "chest",
+    "cable_fly": "chest",
+    "flye": "chest",
+    "pec_deck": "chest",
+    "machine_chest_press": "chest",
+    "cable_crossover": "chest",
+    "dumbbell_floor_press": "chest",
+
+    # ───────────── BACK ─────────────
+    "pull_up": "back",
+    "weighted_pull_up": "back",
+    "chin_up": "back",
+    "lat_pull_down": "back",
+    "lat_pulldown": "back",
+    "seated_row": "back",
+    "barbell_row": "back",
+    "dumbbell_row": "back",
+    "t_bar_row": "back",
+    "machine_row": "back",
+    "seated_cable_row": "back",
+    "straight_arm_pulldown": "back",
+    "deadlift": "back",
+    "romanian_deadlift": "back",
+    "face_pull": "back",
+
+    # ───────────── SHOULDERS ─────────────
+    "overhead_press": "shoulders",
+    "barbell_overhead_press": "shoulders",
+    "dumbbell_overhead_press": "shoulders",
+    "shoulder_press": "shoulders",
+    "arnold_press": "shoulders",
+    "lateral_raise": "shoulders",
+    "front_raise": "shoulders",
+    "rear_delt_raise": "shoulders",
+    "upright_row": "shoulders",
+    "reverse_flye": "shoulders",
+
+    # ───────────── BICEPS ─────────────
+    "barbell_curl": "biceps",
+    "ez_bar_curl": "biceps",
+    "dumbbell_curl": "biceps",
+    "hammer_curl": "biceps",
+    "concentration_curl": "biceps",
+    "preacher_curl": "biceps",
+    "cable_curl": "biceps",
+    "alternating_dumbbell_biceps_curl":  "biceps",
+    "dumbbell_hammer_curl": "biceps",
+    "ez_bar_preacher_curl": "biceps",
+
+    # ───────────── TRICEPS ─────────────
+    "triceps_pushdown": "triceps",
+    "overhead_triceps_extension": "triceps",
+    "cable_overhead_triceps_extension": "triceps",
+    "lying_triceps_extension": "triceps",
+    "skullcrusher": "triceps",
+    "dips": "triceps",
+    "bench_dips": "triceps",
+    "close_grip_bench_press": "triceps",
+    "cable_kickback": "triceps",
+
+    # ───────────── LEGS (QUADS) ─────────────
+    "barbell_back_squat": "quads",
+    "barbell_front_squat": "quads",
+    "goblet_squat": "quads",
+    "hack_squat": "quads",
+    "leg_press": "quads",
+    "split_squat": "quads",
+    "bulgarian_split_squat": "quads",
+    "step_up": "quads",
+    "lunge": "quads",
+
+    # ───────────── HAMSTRINGS ─────────────
+    "romanian_deadlift": "hamstrings",
+    "lying_leg_curl": "hamstrings",
+    "seated_leg_curl": "hamstrings",
+    "good_morning": "hamstrings",
+    "glute_ham_raise": "hamstrings",
+
+    # ───────────── GLUTES ─────────────
+    "hip_thrust": "glutes",
+    "barbell_hip_thrust": "glutes",
+    "glute_bridge": "glutes",
+    "sumo_deadlift": "glutes",
+
+    # ───────────── CALVES ─────────────
+    "standing_calf_raise": "calves",
+    "seated_calf_raise": "calves",
+    "donkey_calf_raise": "calves",
+
+    # ───────────── CORE ─────────────
+    "plank": "core",
+    "side_plank": "core",
+    "crunch": "core",
+    "sit_up": "core",
+    "hanging_leg_raise": "core",
+    "ab_wheel": "core",
+    "cable_crunch": "core",
+
+}
+
+
 garmin_obj = None
 banner_text = """
 
@@ -34,13 +149,13 @@ if env_override:
 # %%
 INFLUXDB_VERSION = os.getenv("INFLUXDB_VERSION",'1') # Your influxdb database version (accepted values are '1' or '3')
 assert INFLUXDB_VERSION in ['1','3'], "Only InfluxDB version 1 or 3 is allowed - please ensure to set this value to either 1 or 3"
-INFLUXDB_HOST = os.getenv("INFLUXDB_HOST",'your.influxdb.hostname') # Required
+INFLUXDB_HOST = os.getenv("INFLUXDB_HOST",'localhost') # Required
 INFLUXDB_PORT = int(os.getenv("INFLUXDB_PORT", 8086)) # Required
 INFLUXDB_USERNAME = os.getenv("INFLUXDB_USERNAME", 'influxdb_username') # Required
 INFLUXDB_PASSWORD = os.getenv("INFLUXDB_PASSWORD", 'influxdb_access_password') # Required
 INFLUXDB_DATABASE = os.getenv("INFLUXDB_DATABASE", 'GarminStats') # Required
 INFLUXDB_V3_ACCESS_TOKEN = os.getenv("INFLUXDB_V3_ACCESS_TOKEN",'') # InfluxDB V3 Access token, required only for InfluxDB V3
-TOKEN_DIR = os.getenv("TOKEN_DIR", "~/.garminconnect") # optional
+TOKEN_DIR = os.getenv("TOKEN_DIR", "~/garmin-grafana/garmin-grafana/garminconnect-tokens") # optional
 GARMINCONNECT_EMAIL = os.environ.get("GARMINCONNECT_EMAIL", None) # optional, asks in prompt on run if not provided
 GARMINCONNECT_PASSWORD = base64.b64decode(os.getenv("GARMINCONNECT_BASE64_PASSWORD")).decode("utf-8") if os.getenv("GARMINCONNECT_BASE64_PASSWORD") != None else None # optional, asks in prompt on run if not provided
 GARMINCONNECT_IS_CN = True if os.getenv("GARMINCONNECT_IS_CN") in ['True', 'true', 'TRUE','t', 'T', 'yes', 'Yes', 'YES', '1'] else False # optional if you are using a Chinese account
@@ -55,11 +170,14 @@ RATE_LIMIT_CALLS_SECONDS = int(os.getenv("RATE_LIMIT_CALLS_SECONDS", 5)) # optio
 INFLUXDB_ENDPOINT_IS_HTTP = False if os.getenv("INFLUXDB_ENDPOINT_IS_HTTP") in ['False','false','FALSE','f','F','no','No','NO','0'] else True # optional
 GARMIN_DEVICENAME_AUTOMATIC = False if GARMIN_DEVICENAME != "Unknown" else True # optional
 UPDATE_INTERVAL_SECONDS = int(os.getenv("UPDATE_INTERVAL_SECONDS", 300)) # optional
-FETCH_SELECTION = os.getenv("FETCH_SELECTION", "daily_avg,sleep,steps,heartrate,stress,breathing,hrv,fitness_age,vo2,activity,race_prediction,body_composition") # additional available values are lactate_threshold,training_status,training_readiness,hill_score,endurance_score,blood_pressure,hydration,solar_intensity which you can add to the list seperated by , without any space
+# FETCH_SELECTION = os.getenv("FETCH_SELECTION", "daily_avg,sleep,steps,heartrate,stress,breathing,hrv,fitness_age,vo2,activity,race_prediction,body_composition") # additional available values are lactate_threshold,training_status,training_readiness,hill_score,endurance_score,blood_pressure,hydration,solar_intensity which you can add to the list seperated by , without any space
+FETCH_SELECTION = "activity"
 LACTATE_THRESHOLD_SPORTS = os.getenv("LACTATE_THRESHOLD_SPORTS", "RUNNING").upper().split(",") # Garmin currently implements RUNNING, but has provisions for CYCLING, and SWIMMING
-KEEP_FIT_FILES = True if os.getenv("KEEP_FIT_FILES") in ['True', 'true', 'TRUE','t', 'T', 'yes', 'Yes', 'YES', '1'] else False # optional
+KEEP_FIT_FILES = True
+# KEEP_FIT_FILES = True if os.getenv("KEEP_FIT_FILES") in ['True', 'true', 'TRUE','t', 'T', 'yes', 'Yes', 'YES', '1'] else False # optional
 FIT_FILE_STORAGE_LOCATION = os.getenv("FIT_FILE_STORAGE_LOCATION", os.path.join(os.path.expanduser("~"), "fit_filestore"))
-ALWAYS_PROCESS_FIT_FILES = True if os.getenv("ALWAYS_PROCESS_FIT_FILES") in ['True', 'true', 'TRUE','t', 'T', 'yes', 'Yes', 'YES', '1'] else False # optional, will process all FIT files for all activities including indoor ones lacking GPS data
+# ALWAYS_PROCESS_FIT_FILES = True if os.getenv("ALWAYS_PROCESS_FIT_FILES") in ['True', 'true', 'TRUE','t', 'T', 'yes', 'Yes', 'YES', '1'] else False # optional, will process all FIT files for all activities including indoor ones lacking GPS data
+ALWAYS_PROCESS_FIT_FILES = True
 REQUEST_INTRADAY_DATA_REFRESH = True if os.getenv("REQUEST_INTRADAY_DATA_REFRESH") in ['True', 'true', 'TRUE','t', 'T', 'yes', 'Yes', 'YES', '1'] else False # optional, This requests data refresh for the intraday data (older than 6 months) - see issue #77. Pauses the script for 24 hours when the daily limit is reached.
 IGNORE_INTRADAY_DATA_REFRESH_DAYS = int(os.getenv("IGNORE_INTRADAY_DATA_REFRESH_DAYS", 30)) # optional, ignores the REQUEST_INTRADAY_DATA_REFRESH for the specified number of days from current date. 
 TAG_MEASUREMENTS_WITH_USER_EMAIL = True if os.getenv("TAG_MEASUREMENTS_WITH_USER_EMAIL") in ['True', 'true', 'TRUE','t', 'T', 'yes', 'Yes', 'YES', '1'] else False # Adds an additional "User_ID" tag in each measurement for multi user database support - see #96
@@ -690,8 +808,10 @@ def get_strength_training(date_str):
     activity_with_gps_id_dict = {}
     activity_list = garmin_obj.get_activities_by_date(date_str, date_str)
     for activity in activity_list:
+        logging.info(f"Activity type: {activity.get('activityType', {}).get('typeKey')}")
         if activity.get('activityType', {}).get('typeKey') == 'strength_training':
             if "startTimeGMT" in activity: # "startTimeGMT" should be available for all activities (fix #13)
+                logging.info(activity.get('activity_exercise_sets'))
                 points_list.append({
                     "measurement":  "ActivitySummary",
                     "time": datetime.strptime(activity["startTimeGMT"], "%Y-%m-%d %H:%M:%S").replace(tzinfo=pytz.UTC).isoformat(),
@@ -705,7 +825,7 @@ def get_strength_training(date_str):
                         "Activity_ID": activity.get('activityId'),
                         'Device_ID': activity.get('deviceId'),
                         'activityName': activity.get('activityName'),
-                        'activityType': (activity.get('activityType') or {}).get('typeKey',None),
+                        'activityType': 'manual strength',
                         'elapsedDuration': activity.get('elapsedDuration'),
                         'calories': activity.get('calories'),
                         'bmrCalories': activity.get('bmrCalories'),
@@ -740,7 +860,7 @@ def get_strength_training(date_str):
                 logging.info(f"Success : Fetching Activity summary with id {activity.get('activityId')} for date {date_str}")
             else:
                 logging.warning(f"Skipped : Start Timestamp missing for activity id {activity.get('activityId')} for date {date_str}")
-    return points_list, activity_with_gps_id_dict
+    return points_list
 
 # %%
 def fetch_activity_GPS(activityIDdict): # Uses FIT file by default, falls back to TCX
@@ -769,6 +889,8 @@ def fetch_activity_GPS(activityIDdict): # Uses FIT file by default, falls back t
                     all_sessions_list = [record.get_values() for record in fitfile.get_messages('session')]
                     all_lengths_list = [record.get_values() for record in fitfile.get_messages('length')]
                     all_laps_list = [record.get_values() for record in fitfile.get_messages('lap')]
+                    all_strengths_list = [record.get_values() for record in fitfile.get_messages('set')]
+                    wkt_name = [record.get_values() for record in fitfile.get_messages('workout')]
                     if len(all_records_list) == 0:
                         raise FileNotFoundError(f"No records found in FIT file for Activity ID {activityID} - Discarding FIT file")
                     else:
@@ -888,6 +1010,52 @@ def fetch_activity_GPS(activityIDdict): # Uses FIT file by default, falls back t
                                     "Max_HR": lap_record.get('max_heart_rate', None),
                                     "Avg_Cadence": lap_record.get('avg_cadence', None),
                                     "Avg_Temperature": lap_record.get('avg_temperature', None)
+                                }
+                            }
+                            points_list.append(point)
+                    for strength in all_strengths_list:
+                        # breakpoint()
+                        # Discarding rest and pulled sets
+                        if strength.get('repetitions') != None and (strength.get('start_time') or strength.get('timestamp')):
+                            exercise_category = FIELD_TYPES.get('exercise_category').values.get(strength.get('category')[0])
+                            if not wkt_name:
+                                workout_name = None
+                            else:
+                                workout_name = wkt_name[0].get('wkt_name') + " - "+ activity_start_time.strftime('%Y%m%d')
+                            subcat = None
+                            primary_muscle = None
+                            if strength.get('category_subtype')[0] != None :
+                                subcat = FIELD_TYPES.get(exercise_category+"_exercise_name").values.get(strength.get('category_subtype')[0])
+                            else:
+                                subcat = exercise_category
+                            primary_muscle = GARMIN_EXERCISE_PRIMARY_MUSCLE.get(subcat, None)
+                            weight = strength.get('weight', None)
+                            if weight == None:
+                                weight = 0.0
+                            point = {
+                                "measurement": "Strength_set",
+                                "time": strength['start_time'].replace(tzinfo=pytz.UTC).isoformat() or strength['timestamp'].replace(tzinfo=pytz.UTC).isoformat(), 
+                                "tags": {
+                                    "Device": GARMIN_DEVICENAME,
+                                    "Database_Name": INFLUXDB_DATABASE,
+                                    "ActivityID": activityID,
+                                    "ActivitySelector": activity_start_time.strftime('%Y%m%dT%H%M%SUTC-') + activity_type,
+                                    "Category": exercise_category,
+                                    "Subcategory": subcat,
+                                    "Primary_Muscle": primary_muscle
+                                },
+                                "fields": {
+                                    "Index": int(strength.get('message_index', -1)) + 1,
+                                    "ActivityName": workout_name,
+                                    "Activity_ID": activityID,
+                                    "Duration": strength.get('duration', None),
+                                    "Sport": strength.get('sport', None),
+                                    "Calories": strength.get('total_calories', None),
+                                    "Avg_HR": strength.get('avg_heart_rate', None),
+                                    "Max_HR": strength.get('max_heart_rate', None),
+                                    "Repetitions": strength.get('repetitions', None),
+                                    "Weight": weight,
+                                    "Volume": weight * strength.get('repetitions', None)
                                 }
                             }
                             points_list.append(point)
@@ -1326,8 +1494,8 @@ def daily_fetch_write(date_str):
         write_points_to_influxdb(fetch_activity_GPS(activity_with_gps_id_dict))
     if 'solar_intensity' in FETCH_SELECTION:
         write_points_to_influxdb(get_solar_intensity(date_str))
-    write_points_to_influxdb(get_strength_training(date_str))
-    logging.info("Fetched strength training data")
+    # write_points_to_influxdb(get_strength_training(date_str))
+    # logging.info("Fetched strength training data")
 
 
 # %%
@@ -1370,47 +1538,53 @@ def fetch_write_bulk(start_date_str, end_date_str):
                 time.sleep(5)
                 repeat_loop = True
 
+def runFetch():
 
-# %%
-garmin_obj = garmin_login()
+    # %%
+    global garmin_obj
+    garmin_obj = garmin_login()
 
-# %%
-if MANUAL_START_DATE:
-    fetch_write_bulk(MANUAL_START_DATE, MANUAL_END_DATE)
-    logging.info(f"Bulk update success : Fetched all available health metrics for date range {MANUAL_START_DATE} to {MANUAL_END_DATE}")
-    exit(0)
-else:
-    try:
-        if INFLUXDB_VERSION == "1":
-            last_influxdb_sync_time_UTC = pytz.utc.localize(datetime.strptime(list(influxdbclient.query(f"SELECT * FROM HeartRateIntraday ORDER BY time DESC LIMIT 1").get_points())[0]['time'],"%Y-%m-%dT%H:%M:%SZ"))
-        else:
-            last_influxdb_sync_time_UTC = pytz.utc.localize(influxdbclient.query(query="SELECT * FROM HeartRateIntraday ORDER BY time DESC LIMIT 1", language="influxql").to_pylist()[0]['time'])
-    except Exception as err:
-        logging.error(err)
-        logging.warning("No previously synced data found in local InfluxDB database, defaulting to 7 day initial fetching. Use specific start date ENV variable to bulk update past data")
-        last_influxdb_sync_time_UTC = (datetime.today() - timedelta(days=7)).astimezone(pytz.timezone("UTC"))
-    try:
-        if USER_TIMEZONE: # If provided by user, using that. 
-            local_timediff = datetime.now(tz=pytz.timezone(USER_TIMEZONE)).utcoffset()
-        else: # otherwise try to set automatically
-            last_activity_dict = garmin_obj.get_last_activity() # (very unlineky event that this will be empty given Garmin's userbase, everyone should have at least one activity)
-            local_timediff = datetime.strptime(last_activity_dict['startTimeLocal'], '%Y-%m-%d %H:%M:%S') - datetime.strptime(last_activity_dict['startTimeGMT'], '%Y-%m-%d %H:%M:%S')
-        if local_timediff >= timedelta(0):
-            logging.info("Using user's local timezone as UTC+" + str(local_timediff))
-        else:
-            logging.info("Using user's local timezone as UTC-" + str(-local_timediff))
-    except (KeyError, TypeError) as err:
-        logging.warning(f"Unable to determine user's timezone - Defaulting to UTC. Consider providing TZ identifier with USER_TIMEZONE environment variable")
-        local_timediff = timedelta(hours=0)
-    
-    while True:
-        last_watch_sync_time_UTC = datetime.fromtimestamp(int(garmin_obj.get_device_last_used().get('lastUsedDeviceUploadTime')/1000)).astimezone(pytz.timezone("UTC"))
-        if last_influxdb_sync_time_UTC < last_watch_sync_time_UTC:
-            logging.info(f"Update found : Current watch sync time is {last_watch_sync_time_UTC} UTC")
-            fetch_write_bulk((last_influxdb_sync_time_UTC + local_timediff).strftime('%Y-%m-%d'), (last_watch_sync_time_UTC + local_timediff).strftime('%Y-%m-%d')) # Using local dates for deciding which dates to fetch in current iteration (see issue #25)
-            last_influxdb_sync_time_UTC = last_watch_sync_time_UTC
-        else:
-            logging.info(f"No new data found : Current watch and influxdb sync time is {last_watch_sync_time_UTC} UTC")
-        logging.info(f"waiting for {UPDATE_INTERVAL_SECONDS} seconds before next automatic update calls")
-        time.sleep(UPDATE_INTERVAL_SECONDS)
+    # %%
+    # MANUAL_START_DATE = "2025-01-01"
+    # MANUAL_END_DATE = "2025-11-01"
 
+    if MANUAL_START_DATE:
+        fetch_write_bulk(MANUAL_START_DATE, MANUAL_END_DATE)
+        logging.info(f"Bulk update success : Fetched all available health metrics for date range {MANUAL_START_DATE} to {MANUAL_END_DATE}")
+        exit(0)
+    else:
+        try:
+            if INFLUXDB_VERSION == "1":
+                last_influxdb_sync_time_UTC = pytz.utc.localize(datetime.strptime(list(influxdbclient.query(f"SELECT * FROM HeartRateIntraday ORDER BY time DESC LIMIT 1").get_points())[0]['time'],"%Y-%m-%dT%H:%M:%SZ"))
+            else:
+                last_influxdb_sync_time_UTC = pytz.utc.localize(influxdbclient.query(query="SELECT * FROM HeartRateIntraday ORDER BY time DESC LIMIT 1", language="influxql").to_pylist()[0]['time'])
+        except Exception as err:
+            logging.error(err)
+            logging.warning("No previously synced data found in local InfluxDB database, defaulting to 7 day initial fetching. Use specific start date ENV variable to bulk update past data")
+            last_influxdb_sync_time_UTC = (datetime.today() - timedelta(days=7)).astimezone(pytz.timezone("UTC"))
+        try:
+            if USER_TIMEZONE: # If provided by user, using that. 
+                local_timediff = datetime.now(tz=pytz.timezone(USER_TIMEZONE)).utcoffset()
+            else: # otherwise try to set automatically
+                last_activity_dict = garmin_obj.get_last_activity() # (very unlineky event that this will be empty given Garmin's userbase, everyone should have at least one activity)
+                local_timediff = datetime.strptime(last_activity_dict['startTimeLocal'], '%Y-%m-%d %H:%M:%S') - datetime.strptime(last_activity_dict['startTimeGMT'], '%Y-%m-%d %H:%M:%S')
+            if local_timediff >= timedelta(0):
+                logging.info("Using user's local timezone as UTC+" + str(local_timediff))
+            else:
+                logging.info("Using user's local timezone as UTC-" + str(-local_timediff))
+        except (KeyError, TypeError) as err:
+            logging.warning(f"Unable to determine user's timezone - Defaulting to UTC. Consider providing TZ identifier with USER_TIMEZONE environment variable")
+            local_timediff = timedelta(hours=0)
+        
+        while True:
+            last_watch_sync_time_UTC = datetime.fromtimestamp(int(garmin_obj.get_device_last_used().get('lastUsedDeviceUploadTime')/1000)).astimezone(pytz.timezone("UTC"))
+            if last_influxdb_sync_time_UTC < last_watch_sync_time_UTC:
+                logging.info(f"Update found : Current watch sync time is {last_watch_sync_time_UTC} UTC")
+                fetch_write_bulk((last_influxdb_sync_time_UTC + local_timediff).strftime('%Y-%m-%d'), (last_watch_sync_time_UTC + local_timediff).strftime('%Y-%m-%d')) # Using local dates for deciding which dates to fetch in current iteration (see issue #25)
+                last_influxdb_sync_time_UTC = last_watch_sync_time_UTC
+            else:
+                logging.info(f"No new data found : Current watch and influxdb sync time is {last_watch_sync_time_UTC} UTC")
+            logging.info(f"waiting for {UPDATE_INTERVAL_SECONDS} seconds before next automatic update calls")
+            time.sleep(UPDATE_INTERVAL_SECONDS)
+
+runFetch()
