@@ -1,4 +1,6 @@
 # %%
+import traceback
+import re
 import base64, requests, time, pytz, logging, os, sys, dotenv, io, zipfile
 from fitparse import FitFile, FitParseError
 from garmin_grafana.profile import FIELD_TYPES
@@ -7,7 +9,6 @@ from influxdb import InfluxDBClient
 from influxdb.exceptions import InfluxDBClientError
 from influxdb_client_3 import InfluxDBClient3, InfluxDBError
 import xml.etree.ElementTree as ET
-from garth.exc import GarthHTTPError
 from garminconnect import (
     Garmin,
     GarminConnectAuthenticationError,
@@ -246,13 +247,25 @@ def iter_days(start_date: str, end_date: str):
 
 # %%
 def garmin_login():
+    token_store = TOKEN_DIR
+    token_store_expanded = os.path.expanduser(TOKEN_DIR)
+    if os.path.isfile(token_store_expanded) and (not token_store_expanded.endswith('.json')):
+        # New native client treats non-.json token paths as directories.
+        # If a legacy file exists at this path, use a dedicated directory instead.
+        token_store = token_store_expanded + "_tokens"
+        logging.warning(
+            "TOKEN_DIR points to an existing file (%s). Using '%s' for native token storage compatibility",
+            token_store_expanded,
+            token_store,
+        )
+
     try:
-        logging.info(f"Trying to login to Garmin Connect using token data from directory '{TOKEN_DIR}'...")
+        logging.info(f"Trying to login to Garmin Connect using token data from directory '{token_store}'...")
         garmin = Garmin()
-        garmin.login(TOKEN_DIR)
+        garmin.login(token_store)
         logging.info("login to Garmin Connect successful using stored session tokens.")
 
-    except (FileNotFoundError, GarthHTTPError, GarminConnectAuthenticationError):
+    except (FileNotFoundError, GarminConnectAuthenticationError, GarminConnectConnectionError):
         logging.warning("Session is expired or login information not present/incorrect. You'll need to log in again...login with your Garmin Connect credentials to generate them.")
         try:
             user_email = GARMINCONNECT_EMAIL
@@ -268,23 +281,37 @@ def garmin_login():
                 mfa_code = input("MFA one-time code (via email or SMS): ")
                 garmin.resume_login(result2, mfa_code)
 
-            garmin.garth.dump(TOKEN_DIR)
-            logging.info(f"Oauth tokens stored in '{TOKEN_DIR}' directory for future use")
+            if hasattr(garmin, "client") and hasattr(garmin.client, "dump"):
+                garmin.client.dump(token_store)
+            elif hasattr(garmin, "garth") and hasattr(garmin.garth, "dump"):
+                # Backward compatibility with older garminconnect module internals.
+                garmin.garth.dump(token_store)
+            else:
+                raise GarminConnectConnectionError("Unable to persist Garmin session tokens: no supported dump method found")
+            logging.info(f"Oauth tokens stored in '{token_store}' directory for future use")
 
-            garmin.login(TOKEN_DIR)
-            logging.info("login to Garmin Connect successful using stored session tokens. Please restart the script. Saved logins will be used automatically")
-            exit() # terminating script
+            logging.info("login to Garmin Connect successful using credentials and MFA (if enabled). Continuing with current run")
 
         except (
             FileNotFoundError,
-            GarthHTTPError,
+            GarminConnectConnectionError,
             GarminConnectAuthenticationError,
+            GarminConnectTooManyRequestsError,
             requests.exceptions.HTTPError,
         ) as err:
             logging.error(str(err))
-            raise Exception("Session is expired : please login again and restart the script")
+            raise Exception("Garmin login failed after credential/MFA attempt")
 
     return garmin
+
+
+def _is_http_status_error(err, status_code):
+    """Best-effort status matching for wrapped Garmin errors in different module versions."""
+    if hasattr(err, "response") and getattr(err.response, "status_code", None) == status_code:
+        return True
+    if hasattr(err, "status_code") and getattr(err, "status_code", None) == status_code:
+        return True
+    return re.search(rf"\b{status_code}\b", str(err)) is not None
 
 # %%
 def write_points_to_influxdb(points):
@@ -293,7 +320,7 @@ def write_points_to_influxdb(points):
         if len(points) != 0:
             if TAG_MEASUREMENTS_WITH_USER_EMAIL:
                 for item in points:
-                    item['tags'].update({'User_ID': garmin_obj.garth.profile.get('userName','Unknown')})
+                    item['tags'].update({'User_ID': garmin_obj.client.profile.get('userName','Unknown')})
             # Write in chunks - Issue reported for large activities data containing >20000 points - Error 413 : payload too large
             for i in range(0, len(points), write_chunk_size):
                 if INFLUXDB_VERSION == '1':
@@ -1521,6 +1548,31 @@ def fetch_write_bulk(start_date_str, end_date_str):
                 logging.info(f"Waiting : for {FETCH_FAILED_WAIT_SECONDS} seconds")
                 time.sleep(FETCH_FAILED_WAIT_SECONDS)
                 repeat_loop = True
+            except (requests.exceptions.HTTPError, GarminConnectConnectionError) as err:
+                # Check if this is a 500 error
+                is_500_error = _is_http_status_error(err, 500)
+                
+                if is_500_error:
+                    consecutive_500_errors += 1
+                    logging.error(f"HTTP 500 error ({consecutive_500_errors}/{MAX_CONSECUTIVE_500_ERRORS}) for date {current_date}: {err}")
+                    if consecutive_500_errors >= MAX_CONSECUTIVE_500_ERRORS:
+                        logging.warning(f"Received {consecutive_500_errors} consecutive HTTP 500 errors. Logging error and continuing backward in time to fetch remaining data.")
+                        logging.warning(f"Skipping date {current_date} due to persistent 500 errors from Garmin API")
+                        logging.info(f"Waiting : for {RATE_LIMIT_CALLS_SECONDS} seconds before continuing")
+                        time.sleep(RATE_LIMIT_CALLS_SECONDS)
+                        repeat_loop = False
+                    else:
+                        logging.info(f"HTTP 500 error encountered - will retry for date {current_date} (attempt {consecutive_500_errors}/{MAX_CONSECUTIVE_500_ERRORS})")
+                        logging.info(f"Waiting : for {RATE_LIMIT_CALLS_SECONDS} seconds before retry")
+                        time.sleep(RATE_LIMIT_CALLS_SECONDS)
+                        repeat_loop = True
+                else:
+                    # Non-500 HTTP errors - handle as before
+                    logging.error(err)
+                    logging.info(f"HTTP Error (non-500) : Failed to fetch one or more metrics - skipping date {current_date}")
+                    logging.info(f"Waiting : for {RATE_LIMIT_CALLS_SECONDS} seconds")
+                    time.sleep(RATE_LIMIT_CALLS_SECONDS)
+                    repeat_loop = False
             except (
                     GarminConnectConnectionError,
                     requests.exceptions.HTTPError,
