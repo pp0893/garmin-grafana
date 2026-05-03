@@ -3,7 +3,7 @@ FROM ghcr.io/astral-sh/uv:0.6.17-python3.13-bookworm-slim
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
-RUN apt update && apt install build-essential -y
+RUN apt update && apt install build-essential git -y
 
 COPY src /app/
 COPY pyproject.toml /app/
