@@ -272,11 +272,9 @@ def garmin_login():
     except (FileNotFoundError, GarminConnectAuthenticationError, GarminConnectConnectionError):
         logging.warning("Session is expired or login information not present/incorrect. You'll need to log in again...login with your Garmin Connect credentials to generate them.")
         try:
-            user_email = GARMINCONNECT_EMAIL
-            user_password = GARMINCONNECT_PASSWORD
-            # removing interactive commands
-            # user_email = GARMINCONNECT_EMAIL or input("Enter Garminconnect Login e-mail: ")
-            # user_password = GARMINCONNECT_PASSWORD or input("Enter Garminconnect password (characters will be visible): ")
+            user_email = GARMINCONNECT_EMAIL or input("Enter Garminconnect Login e-mail: ")
+            user_password = GARMINCONNECT_PASSWORD or input("Enter Garminconnect password (characters will be visible): ")
+            # logging.info(f"Logging with credentials: '{user_email}' | '{user_password}'")
             garmin = Garmin(
                 email=user_email, password=user_password, is_cn=GARMINCONNECT_IS_CN, return_on_mfa=True
             )
